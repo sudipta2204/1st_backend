@@ -1,4 +1,4 @@
-import expres from "express"
+import expres, { urlencoded } from "express"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 
@@ -10,4 +10,8 @@ app.use(cors({
     credentials: true
 }))
 
+app.use(expres.json({limit:"16kb"}))
+app.use(urlencoded({extended:true, limit: "16kb"}))
+app.use(expres.static("public"))
+app.use(cookieParser())
 export {app}
