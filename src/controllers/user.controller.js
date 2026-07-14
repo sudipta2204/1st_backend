@@ -77,10 +77,11 @@ const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
 })
 
 
+
 const loginUser= asyncHandler(async(req, res)=>{
     const{username, password, email}= req.body
 
-    if(!username || !email){
+    if(!(username || email)){
         throw new ApiError(400, "username or email is required")
     }
 
@@ -122,10 +123,37 @@ const loginUser= asyncHandler(async(req, res)=>{
     )
 })
 
+const logoutUser= asyncHandler(async(req, res)=>{
+    User.findByIdAndUpdate(
+        req.user._id,(
+            {
+                $set:{
+                    refreshToken: undefined
+                }
+            },
+            {
+                new: true
+            }
+        )
+    )
+    const options={
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+    .status(200)
+    .clearCookie("accessToken", option)
+    .clearCookie("refreshToken", option)
+    .json(new ApiResponse(200, {}, "user logged out"))
+
+})
+
 
 export {
     registerUser,
-    loginUser
+    loginUser,
+    logoutUser
 }
 
 
